@@ -21,7 +21,7 @@ function setup() {
   foodObj = new Food();
 
   foodStock=database.ref('Food');
-  foodStock.on("value",readStock);
+  foodStock.on("value",readStock,showError);
   
   dog=createSprite(800,200,150,150);
   dog.addImage(sadDog);
@@ -44,7 +44,7 @@ function draw() {
   foodObj.display();
 
   //write code to read fedtime value from the database 
-  fedTime = database.ref('FeedTime');
+ var fedTime = database.ref('FeedTime');
   fedTime.on("value",function (data){
     lastFed = data.val();
   })
@@ -54,10 +54,10 @@ function draw() {
     text("Last Feed : "+lastFed%12 +" PM",350,30);
   }
   else if (lastFed == 0){
-    text(" Last Feed : 12 AM",350,30);
+    text(" Last Feed : 12 AM",350,50);
   }
   else{
-    text(" Last Feed : "+lastFed + "AM",350,30);
+    text(" Last Feed : "+lastFed + "AM",350,50);
   }
   
   
@@ -78,14 +78,14 @@ function feedDog(){
   //write code here to update food stock and last fed time
   var food_stock = foodObj.getFoodStock();
   if (food_stock <= 0){
-    foodObj.updateFoodStock(food_stock*0);
+   foodObj.updateFoodStock(food_stock*0);
   }
   else{
     foodObj.updateFoodStock(food_stock-1);
   }
 
   database.ref('/').update({
-    Food:foodObj.getFoodStock,
+    Food:foodObj.getFoodStock(),
     FeedTime:hour()
   })
 
@@ -97,4 +97,7 @@ function addFoods(){
   database.ref('/').update({
     Food:foodS
   })
+}
+function showError(){
+  console.log("error writting in database");
 }
